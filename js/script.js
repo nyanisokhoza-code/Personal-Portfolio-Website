@@ -42,3 +42,36 @@ revealItems.forEach(item => observer.observe(item));
 document.querySelectorAll('[data-placeholder]').forEach(link => {
   link.addEventListener('click', event => event.preventDefault());
 });
+
+const cvLink = document.querySelector('.cv-float');
+if (cvLink) {
+  const cvHref = cvLink.getAttribute('href');
+  cvLink.removeAttribute('download');
+
+  cvLink.addEventListener('click', event => {
+    event.preventDefault();
+    fetch(cvHref, { method: 'HEAD' })
+      .then(res => { res.ok ? downloadCv(cvHref) : showCvTooltip(); })
+      .catch(() => showCvTooltip());
+  });
+}
+
+function downloadCv(href) {
+  const a = document.createElement('a');
+  a.href = href;
+  a.download = 'Nyaniso-Khoza-CV.pdf';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function showCvTooltip() {
+  if (!cvLink.querySelector('.cv-float-tooltip')) {
+    const tip = document.createElement('span');
+    tip.className = 'cv-float-tooltip';
+    tip.textContent = 'CV coming soon';
+    cvLink.appendChild(tip);
+  }
+  cvLink.classList.add('cv-tooltip-visible');
+  setTimeout(() => cvLink.classList.remove('cv-tooltip-visible'), 2000);
+}
